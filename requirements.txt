@@ -1,0 +1,8 @@
+Flask==2.0.1
+Flask-SQLAlchemy==2.5.1
+WeasyPrint==53.0
+sendgrid==6.6.0
+SQLAlchemy==1.4.22
+Faker==9.3.1
+datetime==4.3
+```

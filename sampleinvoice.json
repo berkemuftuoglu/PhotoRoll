@@ -1,0 +1,32 @@
+{
+    "company": {
+      "name": "Example Company Inc.",
+      "company_number": "EC12345",
+      "address": "1234 Business Rd, Business City, BC"
+    },
+    "customer": {
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "address": "5678 Home St, Hometown, HT"
+    },
+    "invoice": {
+      "bill_number": "INV001",
+      "bill_date": "2023-01-01T00:00:00Z",
+      "due_date": "2023-01-31T00:00:00Z"
+    },
+    "line_items": [
+      {
+        "service_name": "Web Development",
+        "quantity": 2,
+        "unit_price": 1500.00,
+        "line_total": 3000.00
+      },
+      {
+        "service_name": "Web Hosting",
+        "quantity": 6,
+        "unit_price": 100.00,
+        "line_total": 600.00
+      }
+    ],
+    "total_amount": 3600.00
+  }

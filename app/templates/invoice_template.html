@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        .invoice-header {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .bank-details {
+            background-color: #eef2f7;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 20px;
+        }
+        .table-container {
+            overflow-x: auto;
+        }
+        footer {
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <header class="invoice-header">
+                <h1 class="title">Invoice</h1>
+            </header>
+            <div class="columns">
+                <div class="column">
+                    <h2 class="subtitle">Company Details</h2>
+                    <p>Name: {{ company.name }}</p>
+                    <p>Number: {{ company.company_number }}</p>
+                    <p>Address: {{ company.address }}</p>
+                </div>
+                <div class="column">
+                    <h2 class="subtitle">Customer Details</h2>
+                    <p>Name: {{ customer.name }}</p>
+                    <p>Email: {{ customer.email }}</p>
+                    <p>Address: {{ customer.address }}</p>
+                </div>
+            </div>
+            <article class="message is-info">
+                <div class="message-body">
+                    <p>Invoice Number: {{ bill.bill_number }}</p>
+                    <p>Invoice Date: {{ bill.bill_date }}</p>
+                    <p>Due Date: {{ bill.due_date }}</p>
+                </div>
+            </article>
+            <div class="table-container">
+                <table class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Service</th>
+                            <th>Quantity</th>
+                            <th>Unit Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in line_items %}
+                        <tr>
+                            <td>{{ item.service_name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.unit_price }}</td>
+                            <td>{{ item.line_total }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="bank-details">
+                <h2 class="subtitle">Bank Details</h2>
+                <p>Name: {{ bank_details.name }}</p>
+                <p>Sort Code: {{ bank_details.sort_code }}</p>
+                <p>Account Number: {{ bank_details.account_number }}</p>
+            </div>
+            <footer>
+                <h3 class="title is-4">Total Amount: {{ bill.total_amount }}</h3>
+            </footer>
+        </div>
+    </section>
+</body>
+</html>

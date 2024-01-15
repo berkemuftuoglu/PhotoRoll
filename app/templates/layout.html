@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+</head>
+<body>
+    <!-- Left Side Menu -->
+    {% include 'includes/left_menu.html' %}
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="overlay" id="overlay"></div>
+        {% block content %}
+        {% endblock %}
+    </div>
+
+    <!-- Right Slide-in Menu -->
+
+    <script>
+        function toggleRightMenu() {
+            var rightMenu = document.getElementById("rightMenu");
+            var overlay = document.getElementById("overlay");
+            rightMenu.classList.toggle("is-active");
+            overlay.classList.toggle("is-active");
+        }
+    </script>
+</body>
+</html>

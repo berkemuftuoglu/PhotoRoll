@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% block content %}
+  <section class="section">
+    <div class="container">
+      <div class="columns is-centered">
+        <div class="column is-half">
+          <form action="/edituserdata" method="post">
+            <div class="field">
+              <label class="label">Name</label>
+              <div class="control">
+                <input class="input" type="text" name="name" placeholder="Enter name" value="{{ user_data.get('name', '') }}">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Sort Code</label>
+              <div class="control">
+                <input class="input" type="text" name="sort_code" placeholder="Enter sort code" value="{{ user_data.get('sort_code', '') }}">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Account Number</label>
+              <div class="control">
+                <input class="input" type="text" name="account_number" placeholder="Enter account number" value="{{ user_data.get('account_number', '') }}">
+              </div>
+            </div>
+
+            <div class="control">
+              <button class="button is-link">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+{% endblock %}

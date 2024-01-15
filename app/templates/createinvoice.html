@@ -1,0 +1,271 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<div id="invoice-form" class="container">
+    <h2 class="title is-3">Company Details</h2>
+    <div class="field">
+        <div class="control">
+            <div class="select">
+               <select id="company-select" onchange="populateCompanyField()">
+                    <option value="">Select Company</option>
+                    {% for company in companies %}
+                        <option value="{{ company.id }}">{{ company.name }}</option>
+                    {% endfor %}
+                </select> 
+            </div>
+        </div>
+    <input class="input" type="text" id="company-name" placeholder="Company Name" required>
+    <input class="input" type="text" id="company-number" placeholder="Company Number" required>
+    <input class="input" type="text" id="company-address" placeholder="Company Address" required>
+
+    <h2 class="title is-3">Customer Details</h2>
+    <div class="field">
+        <div class="control">
+            <div class="select">
+                <select id="customer-select" onchange="populateCustomerField()">
+                    <option value="">Select Customer</option>
+                    {% for customer in customers %}
+                        <option value="{{ customer.id }}">{{ customer.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    <input class="input" type="text" id="customer-name" placeholder="Customer Name" required>
+    <input class="input" type="email" id="customer-email" placeholder="Customer Email" required>
+    <input class="input" type="text" id="customer-address" placeholder="Customer Address" required>
+
+    <h2 class="title is-3">Invoice Details</h2>
+    <label for="invoice-due-date">Due Date:</label>
+    <input class="input" type="date" id="invoice-due-date" required>
+
+    <h2 class="title is-3">Services</h2>
+    <div id="services-section" class="services-container">
+        <!-- Service fields will be dynamically added here -->
+    </div>
+    <button class="button is-link" type="button" onclick="addServiceField()">Add Service</button>
+    <button class="button is-primary" type="button" onclick="submitInvoice()">Submit Invoice</button>
+</div>
+
+<!-- Modal Structure -->
+<div class="modal" id="pdf-modal" style="display:none;">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <p>Customer Name: <span id="modal-customer-name"></span></p>
+        <p>Customer Email: <span id="modal-customer-email"></span></p>
+        <input class="input" type="text" id="email-subject" placeholder="Email Subject" required>
+        <textarea class="textarea" id="email-body" placeholder="Email Body" required></textarea>
+
+        <iframe id="pdf-iframe" style="width:100%; height:500px;"></iframe>
+
+        <button class="button is-primary" onclick="sendEmail()">Send Email</button>
+    </div>
+    <button class="modal-close is-large" aria-label="close" onclick="closeModal()"></button>
+</div>
+
+<script>
+    const servicesList = {{ services | tojson | safe }};
+    const customersList = {{ customers | tojson | safe }};
+    const companiesList = {{ companies | tojson | safe }};
+
+    let serviceCount = 0;
+
+    function addServiceField() {
+        const servicesSection = document.getElementById('services-section');
+        const serviceDiv = document.createElement('div');
+        serviceDiv.className = 'service-field-group';
+        serviceDiv.innerHTML = `
+            <div class="control">
+                <div class="select">
+                    <select id="service-select-${serviceCount}" onchange="populateServiceField(${serviceCount})">
+                        <option value="">Select Service</option>
+                        ${servicesList.map(service => `<option value="${service.id}">${service.name}</option>`).join('')}
+                    </select>
+                </div>
+            </div>
+            <input class="input" type="text" placeholder="Service Name" id="service-name-${serviceCount}" required>
+            <input class="input" type="number" placeholder="Quantity" id="service-quantity-${serviceCount}">
+            <input class="input" type="number" placeholder="Unit Price" id="service-unit-price-${serviceCount}">
+        `;
+        servicesSection.appendChild(serviceDiv);
+        serviceCount++;
+    }
+
+    function populateServiceField(index) {
+        const selectElement = document.getElementById(`service-select-${index}`);
+        const selectedOption = selectElement.options[selectElement.selectedIndex].text;
+        const selectedId = selectElement.value;
+        const selectedService = servicesList.find(service => service.id == parseInt(selectedId));
+
+        if (selectedOption === "Other") {
+            document.getElementById(`service-name-${index}`).value = '';
+            enableFields([`service-name-${index}`, `service-quantity-${index}`, `service-unit-price-${index}`]);
+        } else if (selectedService) {
+            document.getElementById(`service-name-${index}`).value = selectedService.name;
+            disableFields([`service-name-${index}`]);
+        }
+    }
+
+    function populateCompanyField() {
+        const selectElement = document.getElementById('company-select');
+        const selectedOption = selectElement.options[selectElement.selectedIndex].text;
+        const selectedId = selectElement.value;
+        const selectedCompany = companiesList.find(company => company.id == parseInt(selectedId));
+
+        if (selectedOption === "Other") {
+            enableFields(['company-name', 'company-number', 'company-address']);
+        } else if (selectedCompany) {
+            document.getElementById('company-name').value = selectedCompany.name;
+            document.getElementById('company-number').value = selectedCompany.company_number;
+            document.getElementById('company-address').value = selectedCompany.address;
+            disableFields(['company-name', 'company-number', 'company-address']);
+        }
+    }
+
+    function populateCustomerField() {
+        const selectElement = document.getElementById('customer-select');
+        const selectedOption = selectElement.options[selectElement.selectedIndex].text;
+        const selectedId = selectElement.value;
+        const selectedCustomer = customersList.find(customer => customer.id == parseInt(selectedId));
+
+        if (selectedOption === "Other") {
+            enableFields(['customer-name', 'customer-email', 'customer-address']);
+        } else if (selectedCustomer) {
+            document.getElementById('customer-name').value = selectedCustomer.name;
+            document.getElementById('customer-email').value = selectedCustomer.email;
+            document.getElementById('customer-address').value = selectedCustomer.address;
+            disableFields(['customer-name', 'customer-email', 'customer-address']);
+        }
+    }
+
+    function enableFields(fieldIds) {
+        fieldIds.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            field.value = '';
+            field.disabled = false;
+        });
+    }
+
+    function disableFields(fieldIds) {
+        fieldIds.forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            field.disabled = true;
+        });
+    }
+
+    function collectFormData() {
+        // Collect the selected company ID
+        const selectedCompanyId = document.getElementById('company-select').value;
+        const companyData = {
+            id: selectedCompanyId,
+            name: document.getElementById('company-name').value,
+            number: document.getElementById('company-number').value,
+            address: document.getElementById('company-address').value
+        };
+    
+        // Collect the selected customer ID
+        const selectedCustomerId = document.getElementById('customer-select').value;
+        const customerData = {
+            id: selectedCustomerId,
+            name: document.getElementById('customer-name').value,
+            email: document.getElementById('customer-email').value,
+            address: document.getElementById('customer-address').value
+        };
+    
+        // Collect line items and their IDs
+        const lineItems = [];
+        for (let i = 0; i < serviceCount; i++) {
+            const selectedServiceId = document.getElementById(`service-select-${i}`).value;
+            lineItems.push({
+                service_id: selectedServiceId,
+                service_name: document.getElementById(`service-name-${i}`).value,
+                quantity: parseInt(document.getElementById(`service-quantity-${i}`).value, 10) || 0,
+                unit_price: parseFloat(document.getElementById(`service-unit-price-${i}`).value) || 0
+            });
+        }
+    
+        // Collect invoice details
+        const invoiceData = {
+            due_date: document.getElementById('invoice-due-date').value
+        };
+    
+        return {
+            company: companyData,
+            customer: customerData,
+            invoice: invoiceData,
+            line_items: lineItems
+        };
+    }
+
+    function submitInvoice() {
+
+        // Set the customer name and email in the modal
+        document.getElementById('modal-customer-name').textContent = document.getElementById('customer-name').value;
+        document.getElementById('modal-customer-email').textContent = document.getElementById('customer-email').value;
+
+        const invoiceData = collectFormData();
+        console.log(invoiceData)
+        fetch('/generatepdf', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(invoiceData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Assuming the response contains the path to the PDF
+            document.getElementById('pdf-iframe').src = data.pdfPath;
+            document.getElementById('pdf-modal').style.display = 'block';
+        })
+        /*
+        .catch(error => {
+            console.error('Error:', error);
+            // Handle errors
+        });
+        */
+    }
+
+    function sendEmail() {
+        const formData = collectFormData();
+        const subject = document.getElementById('email-subject').value;
+        const body = document.getElementById('email-body').value;
+        const recipient = document.getElementById('modal-customer-email').textContent;
+        const attachmentPath = document.getElementById('pdf-iframe').src;  // Assuming this is a path
+    
+        const emailData = {
+            subject: subject,
+            body: body,
+            recipient: recipient,
+            attachmentPath: attachmentPath,
+            formData: formData  // Including the collected form data
+        };
+    
+        fetch('/sendinvoice', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(emailData)
+        })
+        .then(response => {
+            if(response.ok) {
+                console.log("Email sent successfully!");
+                closeModal();  // Close the modal on success
+            } else {
+                console.error('Failed to send email');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    }
+
+    function closeModal() {
+        document.getElementById('pdf-modal').style.display = 'none';
+    }
+
+    // Initial call to add the first service field
+    addServiceField();
+</script>
+
+{% endblock %}

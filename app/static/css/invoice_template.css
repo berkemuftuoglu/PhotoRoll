@@ -1,0 +1,36 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+}
+.invoice-box {
+    max-width: 800px;
+    margin: auto;
+    padding: 30px;
+    border: 1px solid #eee;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .15);
+}
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.header img {
+    max-width: 100px;
+}
+.details {
+    margin-bottom: 20px;
+}
+table {
+    width: 100%;
+    line-height: inherit;
+    text-align: left;
+}
+table td {
+    padding: 5px;
+    vertical-align: top;
+}
+.totals {
+    text-align: right;
+}
+.totals td {
+    text-align: right;
+}

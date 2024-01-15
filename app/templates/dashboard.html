@@ -1,0 +1,13 @@
+<!-- Dashboard Page -->
+{% extends 'layout.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+    <h1 class="title">Dashboard</h1>
+    <!-- Dashboard content here -->
+    <div id="revenue-chart"></div>
+    <div id="service-popularity-chart"></div>
+    <div id="customer-segmentation-chart"></div>
+
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+{% endblock %}

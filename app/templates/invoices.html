@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+{% block content %}
+<input type="text" id="filterInput" class="input" onkeyup="filterTable()" placeholder="Search for invoices...">
+<table class="table is-striped is-hoverable is-fullwidth" id="invoicesTable">
+    <thead>
+        <tr>
+            <th onclick="sortTable(0)">Invoice Number</th>
+            <th onclick="sortTable(1)">Customer</th>
+            <th onclick="sortTable(2)">Date</th>
+            <th onclick="sortTable(3)">Total Amount</th>
+            <th onclick="sortTable(4)">Status</th>
+            <th onclick="sortTable(5)">Due Date</th>
+            <th>Preview</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for invoice in invoices %}
+        <tr>
+            <td>{{ invoice.bill_number }}</td>
+            <td>{{ invoice.customer.name }}</td>
+            <td>{{ invoice.bill_date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ invoice.total_amount }}</td>
+            <td><span class="status-indicator {{ invoice.status|lower }}">{{ invoice.status }}</span></td>
+            <td>{{ invoice.due_date.strftime('%Y-%m-%d') if invoice.due_date else 'N/A' }}</td>
+            <td>
+                <button class="button is-small is-info" onclick="openModal('pdf-modal-{{ loop.index }}')">Preview</button>
+                <!-- Modal -->
+                <div class="modal" id="pdf-modal-{{ loop.index }}">
+                    <div class="modal-background"></div>
+                    <div class="modal-content">
+                        <iframe src="{{ url_for('static', filename='invoices/invoice_' + invoice.bill_number + '.pdf') }}" width="100%" height="100%"></iframe>
+                    </div>
+                    <button class="modal-close is-large" aria-label="close" onclick="closeModal('pdf-modal-{{ loop.index }}')"></button>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<!-- ... pagination ... -->
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    {% if pagination.has_prev %}
+        <a href="{{ url_for('invoices', page=pagination.prev_num) }}" class="pagination-previous">Previous</a>
+    {% else %}
+        <a class="pagination-previous" disabled>Previous</a>
+    {% endif %}
+
+    <ul class="pagination-list">
+        {% for page_num in pagination.iter_pages(left_edge=1, left_current=2, right_current=3, right_edge=1) %}
+            {% if page_num %}
+                {% if page_num != pagination.page %}
+                    <li><a href="{{ url_for('invoices', page=page_num) }}" class="pagination-link">{{ page_num }}</a></li>
+                {% else %}
+                    <li><a class="pagination-link is-current" aria-current="page">{{ page_num }}</a></li>
+                {% endif %}
+            {% else %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    {% if pagination.has_next %}
+        <a href="{{ url_for('invoices', page=pagination.next_num) }}" class="pagination-next">Next</a>
+    {% else %}
+        <a class="pagination-next" disabled>Next</a>
+    {% endif %}
+</nav>
+<script src="{{ url_for('static', filename='js/invoices.js') }}"></script>
+{% endblock %}

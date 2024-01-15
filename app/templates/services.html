@@ -1,0 +1,90 @@
+{% extends 'layout.html' %}
+{% block content %}
+<input type="text" id="filterInput" class="input" onkeyup="filterTable()" placeholder="Search for services...">
+
+<table class="table is-striped is-hoverable is-fullwidth" id="servicesTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for service in services %}
+        <tr>
+            <td>{{ service.id }}</td>
+            <td>{{ service.name }}</td>
+            <td>{{ service.description }}</td>
+            <td>
+                <button class="button is-small is-info" onclick="openEditModal({{ service.id }}, '{{ service.name }}', '{{ service.description }}')">Edit</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    {% if pagination.has_prev %}
+        <a href="{{ url_for('services', page=pagination.prev_num) }}" class="pagination-previous">Previous</a>
+    {% else %}
+        <a class="pagination-previous" disabled>Previous</a>
+    {% endif %}
+
+    <ul class="pagination-list">
+        {% for page_num in pagination.iter_pages(left_edge=1, left_current=2, right_current=3, right_edge=1) %}
+            {% if page_num %}
+                {% if page_num != pagination.page %}
+                    <li><a href="{{ url_for('services', page=page_num) }}" class="pagination-link">{{ page_num }}</a></li>
+                {% else %}
+                    <li><a class="pagination-link is-current" aria-current="page">{{ page_num }}</a></li>
+                {% endif %}
+            {% else %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    {% if pagination.has_next %}
+        <a href="{{ url_for('services', page=pagination.next_num) }}" class="pagination-next">Next</a>
+    {% else %}
+        <a class="pagination-next" disabled>Next</a>
+    {% endif %}
+</nav>
+
+<div class="modal" id="editServiceModal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">Edit Service</p>
+            <button class="delete" aria-label="close" onclick="closeEditModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            <form id="editServiceForm">
+                <input type="hidden" id="editServiceId">
+                <div class="field">
+                    <label class="label">Service Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="editServiceName" required>
+                    </div>
+                </div>
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="control">
+                        <textarea class="textarea" id="editServiceDescription" required></textarea>
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-link">Update</button>
+                    </div>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/services.js') }}"></script>
+
+{% endblock %}

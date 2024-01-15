@@ -1,0 +1,124 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!-- Customer Table -->
+<table class="table is-striped is-hoverable is-fullwidth" id="customersTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Email</th>
+            <th>Name</th>
+            <th>Company Name</th>
+            <th>Company Number</th>
+            <th>Address</th>
+            <th>Edit</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer.id }}</td>
+            <td>{{ customer.email }}</td>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.company.name if customer.company else 'N/A' }}</td>
+            <td>{{ customer.company.company_number if customer.company else 'N/A' }}</td>
+            <td>{{ customer.address }}</td>
+            <td>
+                <button class="button is-small is-info" onclick="openEditModal({{ customer.id }}, '{{ customer.email }}', '{{ customer.name }}', '{{ customer.company.name if customer.company else '' }}', '{{ customer.company.company_number if customer.company else '' }}', '{{ customer.address }}')">Edit</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Pagination Controls -->
+<nav class="pagination is-centered" role="navigation" aria-label="pagination">
+    {% if pagination.has_prev %}
+        <a href="{{ url_for('customers', page=pagination.prev_num) }}" class="pagination-previous">Previous</a>
+    {% else %}
+        <a class="pagination-previous" disabled>Previous</a>
+    {% endif %}
+
+    <ul class="pagination-list">
+        {% for page_num in pagination.iter_pages(left_edge=1, left_current=2, right_current=3, right_edge=1) %}
+            {% if page_num %}
+                {% if page_num != pagination.page %}
+                    <li><a href="{{ url_for('customers', page=page_num) }}" class="pagination-link">{{ page_num }}</a></li>
+                {% else %}
+                    <li><a class="pagination-link is-current" aria-current="page">{{ page_num }}</a></li>
+                {% endif %}
+            {% else %}
+                <li><span class="pagination-ellipsis">&hellip;</span></li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+
+    {% if pagination.has_next %}
+        <a href="{{ url_for('customers', page=pagination.next_num) }}" class="pagination-next">Next</a>
+    {% else %}
+        <a class="pagination-next" disabled>Next</a>
+    {% endif %}
+</nav>
+
+<!-- Edit Customer Modal -->
+<div class="modal" id="editCustomerModal">
+    <div class="modal-background" onclick="closeEditModal()"></div>
+    <div class="modal-content">
+        <div class="box">
+            <form id="editCustomerForm">
+                <!-- Hidden field for customer ID -->
+                <input type="hidden" id="editCustomerId">
+
+                <!-- Email Field -->
+                <div class="field">
+                    <label class="label">Email</label>
+                    <div class="control">
+                        <input class="input" type="email" id="editCustomerEmail" required>
+                    </div>
+                </div>
+
+                <!-- Name Field -->
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="editCustomerName" required>
+                    </div>
+                </div>
+
+                <!-- Company Name Field -->
+                <div class="field">
+                    <label class="label">Company Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="editCustomerCompanyName">
+                    </div>
+                </div>
+
+                <!-- Company Number Field -->
+                <div class="field">
+                    <label class="label">Company Number</label>
+                    <div class="control">
+                        <input class="input" type="text" id="editCustomerCompanyNumber">
+                    </div>
+                </div>
+
+                <!-- Address Field -->
+                <div class="field">
+                    <label class="label">Address</label>
+                    <div class="control">
+                        <textarea class="textarea" id="editCustomerAddress"></textarea>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="field">
+                    <div class="control">
+                        <button type="submit" class="button is-success">Save changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close" onclick="closeEditModal()"></button>
+</div>
+
+<script src="{{ url_for('static', filename='js/customers.js') }}"></script>
+{% endblock %}

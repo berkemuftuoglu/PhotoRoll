@@ -1,0 +1,21 @@
+<!-- Left Side Menu -->
+<aside class="menu has-background-burgundy is-hidden-mobile">
+  <p class="menu-label">
+    General
+  </p>
+  <ul class="menu-list">
+    <li><a href="{{ url_for('dashboard') }}" class="is-active">Dashboard</a></li>
+    <li><a href="{{ url_for('invoices') }}">My Invoices</a></li>
+    <li><a href="{{ url_for('services') }}">My Services</a></li>
+    <li><a href="{{ url_for('customers') }}">My Customers</a></li>
+    <li><a href="{{ url_for('createinvoice') }}">Create Invoice</a></li>
+  </ul>
+  <div class="settings-gear">
+    <a href="{{ url_for('usersettings') }}" class="button is-white is-rounded">
+      <span class="icon is-small">
+        <i class="fas fa-cog"></i>
+      </span>
+    </a>
+  </div>
+</aside>
+
