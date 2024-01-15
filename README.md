@@ -1,5 +1,7 @@
 # PhotoRoll
 
+![PhotoRoll Logo](app/static/images/photoroll_logo.png)
+
 ## Introduction
 PhotoRoll is a versatile web application dedicated to creating, storing, and sending invoices efficiently and effectively.
 
