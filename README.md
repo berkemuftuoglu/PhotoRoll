@@ -5,6 +5,12 @@
 ## Introduction
 PhotoRoll is a versatile web application dedicated to creating, storing, and sending invoices efficiently and effectively.
 
+## Technology
+- Backend: Flask
+- Frontend: HTML/CSS/JS
+- Styling: Bulma CSS [https://bulma.io/]
+- Database: SQLite3 with SQLalchemy [https://www.sqlalchemy.org/] 
+
 ## Prerequisites
 To get started with PhotoRoll, ensure you have the following installed:
 - Anaconda or Miniconda
